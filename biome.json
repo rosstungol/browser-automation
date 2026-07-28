@@ -10,6 +10,20 @@
 		"ignoreUnknown": true,
 		"includes": ["**", "!node_modules", "!.next", "!dist", "!build", "!.agents"]
 	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"nursery": {
+				"useSortedClasses": {
+					"level": "error",
+					"fix": "safe",
+					"options": {
+						"functions": ["clsx", "cva", "twMerge"]
+					}
+				}
+			}
+		}
+	},
 	"formatter": {
 		"enabled": true,
 		"formatWithErrors": false,
