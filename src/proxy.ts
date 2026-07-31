@@ -9,7 +9,11 @@ export default clerkMiddleware(async (auth, request) => {
 		return
 	}
 
-	if (!PUBLIC_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`))) {
+	if (
+		!PUBLIC_ROUTES.some(
+			(route) => pathname === route || pathname.startsWith(`${route}/`)
+		)
+	) {
 		await auth.protect()
 	}
 })
