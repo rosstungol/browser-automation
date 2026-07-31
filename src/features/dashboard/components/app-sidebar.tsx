@@ -17,7 +17,6 @@ export function AppSidebar() {
 					appearance={{
 						elements: {
 							rootBox: 'min-w-0 group-data-[collapsible=icon]:!hidden',
-							organizationSwitcherTrigger: 'w-full justify-between',
 						},
 					}}
 				/>
