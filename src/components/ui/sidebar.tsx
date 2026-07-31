@@ -22,6 +22,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { setCookie } from '@/lib/cookies'
 import { cn } from '@/lib/utils'
 
@@ -35,7 +36,7 @@ const SIDEBAR_KEYBOARD_SHORTCUT = 'b'
 type SidebarContextProps = {
 	state: 'expanded' | 'collapsed'
 	open: boolean
-	setOpen: (open: boolean) => void
+	setOpen: (open: boolean | ((value: boolean) => boolean)) => void
 	openMobile: boolean
 	setOpenMobile: (open: boolean) => void
 	isMobile: boolean
@@ -66,16 +67,23 @@ function SidebarProvider({
 	open?: boolean
 	onOpenChange?: (open: boolean) => void
 }) {
-	const isMobile = false
+	const isMobile = useIsMobile()
 	const [openMobile, setOpenMobile] = React.useState(false)
 
 	// This is the internal state of the sidebar.
 	// We use openProp and setOpenProp for control from outside the component.
 	const [_open, _setOpen] = React.useState(defaultOpen)
 	const open = openProp ?? _open
+	const openRef = React.useRef(open)
+	React.useEffect(() => {
+		openRef.current = open
+	})
+
 	const setOpen = React.useCallback(
 		(value: boolean | ((value: boolean) => boolean)) => {
-			const openState = typeof value === 'function' ? value(open) : value
+			const openState =
+				typeof value === 'function' ? value(openRef.current) : value
+			openRef.current = openState
 			if (setOpenProp) {
 				setOpenProp(openState)
 			} else {
@@ -85,7 +93,7 @@ function SidebarProvider({
 			// This sets the cookie to keep the sidebar state.
 			setCookie(SIDEBAR_COOKIE_NAME, String(openState), SIDEBAR_COOKIE_MAX_AGE)
 		},
-		[setOpenProp, open]
+		[setOpenProp]
 	)
 
 	// Helper to toggle the sidebar.
@@ -181,19 +189,24 @@ function Sidebar({
 
 	if (isMobile) {
 		return (
-			<Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+			<Sheet open={openMobile} onOpenChange={setOpenMobile}>
 				<SheetContent
+					{...props}
 					dir={dir}
+					side={side}
 					data-sidebar='sidebar'
 					data-slot='sidebar'
 					data-mobile='true'
-					className='w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden'
+					className={cn(
+						'w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden',
+						className
+					)}
 					style={
 						{
 							'--sidebar-width': SIDEBAR_WIDTH_MOBILE,
+							...props.style,
 						} as React.CSSProperties
 					}
-					side={side}
 				>
 					<SheetHeader className='sr-only'>
 						<SheetTitle>Sidebar</SheetTitle>
@@ -207,7 +220,7 @@ function Sidebar({
 
 	return (
 		<div
-			className='group peer block text-sidebar-foreground'
+			className='group peer hidden text-sidebar-foreground md:block'
 			data-state={state}
 			data-collapsible={state === 'collapsed' ? collapsible : ''}
 			data-variant={variant}
@@ -230,7 +243,7 @@ function Sidebar({
 				data-slot='sidebar-container'
 				data-side={side}
 				className={cn(
-					'fixed inset-y-0 z-10 flex h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear data-[side=right]:right-0 data-[side=left]:left-0 data-[side=right]:group-data-[collapsible=offcanvas]:-right-(--sidebar-width) data-[side=left]:group-data-[collapsible=offcanvas]:-left-(--sidebar-width)',
+					'fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear data-[side=right]:right-0 data-[side=left]:left-0 data-[side=right]:group-data-[collapsible=offcanvas]:-right-(--sidebar-width) data-[side=left]:group-data-[collapsible=offcanvas]:-left-(--sidebar-width) md:flex',
 					// Adjust the padding for floating and inset variants.
 					variant === 'floating' || variant === 'inset'
 						? 'p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]'
@@ -607,9 +620,14 @@ function SidebarMenuSkeleton({
 }: React.ComponentProps<'div'> & {
 	showIcon?: boolean
 }) {
-	// Random width between 50 to 90%.
+	// Random width between 50 to 90%, derived from a stable id to avoid hydration mismatch.
+	const id = React.useId()
 	const [width] = React.useState(() => {
-		return `${Math.floor(Math.random() * 40) + 50}%`
+		let hash = 0
+		for (let i = 0; i < id.length; i += 1) {
+			hash = (hash * 31 + id.charCodeAt(i)) >>> 0
+		}
+		return `${(hash % 40) + 50}%`
 	})
 
 	return (
