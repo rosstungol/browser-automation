@@ -22,7 +22,6 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { useIsMobile } from '@/hooks/use-mobile'
 import { setCookie } from '@/lib/cookies'
 import { cn } from '@/lib/utils'
 
@@ -67,7 +66,7 @@ function SidebarProvider({
 	open?: boolean
 	onOpenChange?: (open: boolean) => void
 }) {
-	const isMobile = useIsMobile()
+	const isMobile = false
 	const [openMobile, setOpenMobile] = React.useState(false)
 
 	// This is the internal state of the sidebar.
@@ -208,7 +207,7 @@ function Sidebar({
 
 	return (
 		<div
-			className='group peer hidden text-sidebar-foreground md:block'
+			className='group peer block text-sidebar-foreground'
 			data-state={state}
 			data-collapsible={state === 'collapsed' ? collapsible : ''}
 			data-variant={variant}
@@ -231,7 +230,7 @@ function Sidebar({
 				data-slot='sidebar-container'
 				data-side={side}
 				className={cn(
-					'fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear data-[side=right]:right-0 data-[side=left]:left-0 data-[side=right]:group-data-[collapsible=offcanvas]:-right-(--sidebar-width) data-[side=left]:group-data-[collapsible=offcanvas]:-left-(--sidebar-width) md:flex',
+					'fixed inset-y-0 z-10 flex h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear data-[side=right]:right-0 data-[side=left]:left-0 data-[side=right]:group-data-[collapsible=offcanvas]:-right-(--sidebar-width) data-[side=left]:group-data-[collapsible=offcanvas]:-left-(--sidebar-width)',
 					// Adjust the padding for floating and inset variants.
 					variant === 'floating' || variant === 'inset'
 						? 'p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]'

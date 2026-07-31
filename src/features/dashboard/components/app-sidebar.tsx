@@ -10,7 +10,7 @@ import { WorkflowNav } from '@/features/dashboard/components/workflow-nav'
 
 export function AppSidebar() {
 	return (
-		<Sidebar variant='inset' collapsible='icon' className='mx-1 py-4'>
+		<Sidebar variant='inset' collapsible='icon' className='py-4 md:mx-1'>
 			<SidebarHeader className='group-data-[collapsible=icon]:justify-center! flex-row items-center justify-between gap-2'>
 				<OrganizationSwitcher
 					hidePersonal
@@ -24,7 +24,7 @@ export function AppSidebar() {
 				<SidebarTrigger />
 			</SidebarHeader>
 			<WorkflowNav />
-			<SidebarFooter>
+			<SidebarFooter className='mx-0.75'>
 				<UserButton />
 			</SidebarFooter>
 		</Sidebar>
