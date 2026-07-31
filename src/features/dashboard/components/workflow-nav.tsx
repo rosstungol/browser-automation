@@ -58,6 +58,17 @@ function AddWorkflowButton() {
 	)
 }
 
+function WorkflowNavHeader() {
+	return (
+		<PopoverHeader className='flex-row items-center justify-between gap-0 px-2'>
+			<PopoverTitle className='font-medium text-muted-foreground text-xs'>
+				Workflows
+			</PopoverTitle>
+			<AddWorkflowButton />
+		</PopoverHeader>
+	)
+}
+
 export function WorkflowNav() {
 	const { state } = useSidebar()
 
@@ -79,12 +90,7 @@ export function WorkflowNav() {
 							align='start'
 							className='w-64 gap-1 p-2'
 						>
-							<PopoverHeader className='flex-row items-center justify-between gap-0 px-2'>
-								<PopoverTitle className='font-medium text-muted-foreground text-xs'>
-									Workflows
-								</PopoverTitle>
-								<AddWorkflowButton />
-							</PopoverHeader>
+							<WorkflowNavHeader />
 							<WorkflowList />
 						</PopoverContent>
 					</Popover>
@@ -106,3 +112,5 @@ export function WorkflowNav() {
 		</SidebarContent>
 	)
 }
+
+export { AddWorkflowButton, WorkflowList, WorkflowNavHeader }
