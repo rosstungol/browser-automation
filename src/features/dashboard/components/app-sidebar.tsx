@@ -1,31 +1,12 @@
-'use client'
-
 import { OrganizationSwitcher, UserButton } from '@clerk/nextjs'
-import { WorkflowSquare07Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/react'
 
 import {
 	Sidebar,
-	SidebarContent,
 	SidebarFooter,
-	SidebarGroup,
-	SidebarGroupContent,
-	SidebarGroupLabel,
 	SidebarHeader,
-	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem,
 	SidebarTrigger,
 } from '@/components/ui/sidebar'
-
-const workflows = [
-	{ name: 'Welcome Workflow', icon: WorkflowSquare07Icon },
-	{ name: 'Morning Scraper', icon: WorkflowSquare07Icon },
-	{ name: 'Nightly Report', icon: WorkflowSquare07Icon },
-	{ name: 'Data Sync', icon: WorkflowSquare07Icon },
-	{ name: 'Approval Flow', icon: WorkflowSquare07Icon },
-	{ name: 'Cleanup Task', icon: WorkflowSquare07Icon },
-]
+import { WorkflowNav } from '@/features/dashboard/components/workflow-nav'
 
 export function AppSidebar() {
 	return (
@@ -42,24 +23,8 @@ export function AppSidebar() {
 				/>
 				<SidebarTrigger />
 			</SidebarHeader>
-			<SidebarContent>
-				<SidebarGroup>
-					<SidebarGroupLabel>Workflows</SidebarGroupLabel>
-					<SidebarGroupContent>
-						<SidebarMenu>
-							{workflows.map((workflow) => (
-								<SidebarMenuItem key={workflow.name}>
-									<SidebarMenuButton tooltip={workflow.name}>
-										<HugeiconsIcon icon={workflow.icon} />
-										<span>{workflow.name}</span>
-									</SidebarMenuButton>
-								</SidebarMenuItem>
-							))}
-						</SidebarMenu>
-					</SidebarGroupContent>
-				</SidebarGroup>
-			</SidebarContent>
-			<SidebarFooter className='mx-0.5'>
+			<WorkflowNav />
+			<SidebarFooter>
 				<UserButton />
 			</SidebarFooter>
 		</Sidebar>
