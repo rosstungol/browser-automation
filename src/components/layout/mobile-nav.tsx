@@ -15,9 +15,18 @@ import {
 	WorkflowList,
 	WorkflowNavHeader,
 } from '@/features/workflows/components/workflow-nav'
+import type { Workflow } from '@/lib/db/schema'
 import { cn } from '@/lib/utils'
 
-export function MobileNav({ className }: { className?: string }) {
+export function MobileNav({
+	className,
+	workflows,
+	createWorkflow,
+}: {
+	className?: string
+	workflows: Workflow[]
+	createWorkflow: (name: string) => Promise<void>
+}) {
 	return (
 		<div className={cn('md:hidden', className)}>
 			<Popover>
@@ -42,8 +51,8 @@ export function MobileNav({ className }: { className?: string }) {
 						<UserButton />
 					</div>
 					<Separator />
-					<WorkflowNavHeader />
-					<WorkflowList />
+					<WorkflowNavHeader createWorkflow={createWorkflow} />
+					<WorkflowList workflows={workflows} />
 				</PopoverContent>
 			</Popover>
 		</div>
