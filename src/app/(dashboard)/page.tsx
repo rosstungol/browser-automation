@@ -3,7 +3,6 @@ import { WorkflowSquare07Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 
 import { MobileNav } from '@/components/layout/mobile-nav'
-import { Button } from '@/components/ui/button'
 import {
 	Empty,
 	EmptyContent,
@@ -13,6 +12,7 @@ import {
 	EmptyTitle,
 } from '@/components/ui/empty'
 import { createWorkflowAction } from '@/features/workflows/actions'
+import { AddWorkflowButton } from '@/features/workflows/components/workflow-nav'
 import { listWorkflows } from '@/features/workflows/data'
 
 export default async function Page() {
@@ -40,7 +40,10 @@ export default async function Page() {
 					</EmptyDescription>
 				</EmptyHeader>
 				<EmptyContent>
-					<Button>New workflow</Button>
+					<AddWorkflowButton
+						variant='text'
+						createWorkflow={createWorkflowAction}
+					/>
 				</EmptyContent>
 			</Empty>
 		</div>
