@@ -1,11 +1,8 @@
 'use client'
 
-import { Add01Icon, WorkflowSquare07Icon } from '@hugeicons/core-free-icons'
+import { WorkflowSquare07Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { useTransition } from 'react'
-import { toast } from 'sonner'
 
-import { Button } from '@/components/ui/button'
 import {
 	Popover,
 	PopoverContent,
@@ -23,14 +20,14 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from '@/components/ui/sidebar'
-import { generateSlug } from '@/features/workflows/lib/generate-slug'
+import { AddWorkflowButton } from '@/features/workflows/components/add-workflow-button'
 import type { Workflow } from '@/lib/db/schema'
 
 function WorkflowList({ workflows }: { workflows: Workflow[] }) {
 	return (
 		<SidebarMenu>
 			{workflows.length === 0 ? (
-				<span className='px-3 py-2'>No workflows yet</span>
+				<span className='px-2 py-2 md:px-3'>No workflows yet</span>
 			) : (
 				workflows.map((workflow) => (
 					<SidebarMenuItem key={workflow.id}>
@@ -41,41 +38,6 @@ function WorkflowList({ workflows }: { workflows: Workflow[] }) {
 				))
 			)}
 		</SidebarMenu>
-	)
-}
-
-function AddWorkflowButton({
-	createWorkflow,
-}: {
-	createWorkflow: (name: string) => Promise<void>
-}) {
-	const [pending, startTransition] = useTransition()
-
-	return (
-		<Button
-			variant='ghost'
-			size='icon-sm'
-			aria-label='Add workflow'
-			className='rounded-md'
-			disabled={pending}
-			onClick={() =>
-				startTransition(async () => {
-					try {
-						await createWorkflow(generateSlug())
-					} catch (error) {
-						if (
-							String(
-								(error as { digest?: string } | null)?.digest ?? ''
-							).startsWith('NEXT_REDIRECT')
-						)
-							throw error
-						toast.error('Could not create workflow')
-					}
-				})
-			}
-		>
-			<HugeiconsIcon icon={Add01Icon} />
-		</Button>
 	)
 }
 
