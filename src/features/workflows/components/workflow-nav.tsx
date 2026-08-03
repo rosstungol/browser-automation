@@ -1,9 +1,8 @@
 'use client'
 
-import { Add01Icon, WorkflowSquare07Icon } from '@hugeicons/core-free-icons'
+import { WorkflowSquare07Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 
-import { Button } from '@/components/ui/button'
 import {
 	Popover,
 	PopoverContent,
@@ -21,55 +20,49 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from '@/components/ui/sidebar'
+import { AddWorkflowButton } from '@/features/workflows/components/add-workflow-button'
+import type { Workflow } from '@/lib/db/schema'
 
-const workflows = [
-	'Welcome Workflow',
-	'Morning Scraper',
-	'Nightly Report',
-	'Data Sync',
-	'Approval Flow',
-	'Cleanup Task',
-]
-
-function WorkflowList() {
+function WorkflowList({ workflows }: { workflows: Workflow[] }) {
 	return (
 		<SidebarMenu>
-			{workflows.map((workflow) => (
-				<SidebarMenuItem key={workflow}>
-					<SidebarMenuButton>
-						<span>{workflow}</span>
-					</SidebarMenuButton>
-				</SidebarMenuItem>
-			))}
+			{workflows.length === 0 ? (
+				<span className='px-2 py-2 md:px-3'>No workflows yet</span>
+			) : (
+				workflows.map((workflow) => (
+					<SidebarMenuItem key={workflow.id}>
+						<SidebarMenuButton>
+							<span>{workflow.name}</span>
+						</SidebarMenuButton>
+					</SidebarMenuItem>
+				))
+			)}
 		</SidebarMenu>
 	)
 }
 
-function AddWorkflowButton() {
-	return (
-		<Button
-			variant='ghost'
-			size='icon-sm'
-			aria-label='Add workflow'
-			className='rounded-md'
-		>
-			<HugeiconsIcon icon={Add01Icon} />
-		</Button>
-	)
-}
-
-function WorkflowNavHeader() {
+function WorkflowNavHeader({
+	createWorkflow,
+}: {
+	createWorkflow: (name: string) => Promise<void>
+}) {
 	return (
 		<PopoverHeader className='flex-row items-center justify-between gap-0 px-2'>
 			<PopoverTitle className='font-medium text-muted-foreground text-xs'>
 				Workflows
 			</PopoverTitle>
-			<AddWorkflowButton />
+			<AddWorkflowButton createWorkflow={createWorkflow} />
 		</PopoverHeader>
 	)
 }
 
-export function WorkflowNav() {
+export function WorkflowNav({
+	workflows,
+	createWorkflow,
+}: {
+	workflows: Workflow[]
+	createWorkflow: (name: string) => Promise<void>
+}) {
 	const { state } = useSidebar()
 
 	if (state === 'collapsed')
@@ -90,8 +83,8 @@ export function WorkflowNav() {
 							align='start'
 							className='w-64 gap-1 p-2'
 						>
-							<WorkflowNavHeader />
-							<WorkflowList />
+							<WorkflowNavHeader createWorkflow={createWorkflow} />
+							<WorkflowList workflows={workflows} />
 						</PopoverContent>
 					</Popover>
 				</SidebarGroup>
@@ -103,10 +96,10 @@ export function WorkflowNav() {
 			<SidebarGroup>
 				<SidebarGroupLabel className='items-center justify-between pr-0'>
 					Workflows
-					<AddWorkflowButton />
+					<AddWorkflowButton createWorkflow={createWorkflow} />
 				</SidebarGroupLabel>
 				<SidebarGroupContent>
-					<WorkflowList />
+					<WorkflowList workflows={workflows} />
 				</SidebarGroupContent>
 			</SidebarGroup>
 		</SidebarContent>
