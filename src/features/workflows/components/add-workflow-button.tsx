@@ -2,10 +2,14 @@
 
 import { Add01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { useTransition } from 'react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
+import {
+	releaseCreateWorkflowLock,
+	tryAcquireCreateWorkflowLock,
+	useCreateWorkflowInFlight,
+} from '@/features/workflows/lib/create-workflow-lock'
 import { generateSlug } from '@/features/workflows/lib/generate-slug'
 
 export function AddWorkflowButton({
@@ -15,22 +19,24 @@ export function AddWorkflowButton({
 	createWorkflow: (name: string) => Promise<void>
 	variant?: 'icon' | 'text'
 }) {
-	const [pending, startTransition] = useTransition()
+	const pending = useCreateWorkflowInFlight()
 
-	const handleClick = () =>
-		startTransition(async () => {
-			try {
-				await createWorkflow(generateSlug())
-			} catch (error) {
-				if (
-					String(
-						(error as { digest?: string } | null)?.digest ?? ''
-					).startsWith('NEXT_REDIRECT')
+	const handleClick = async () => {
+		if (!tryAcquireCreateWorkflowLock()) return
+		try {
+			await createWorkflow(generateSlug())
+		} catch (error) {
+			if (
+				String((error as { digest?: string } | null)?.digest ?? '').startsWith(
+					'NEXT_REDIRECT'
 				)
-					throw error
-				toast.error('Could not create workflow')
-			}
-		})
+			)
+				throw error
+			toast.error('Could not create workflow')
+		} finally {
+			releaseCreateWorkflowLock()
+		}
+	}
 
 	if (variant === 'text')
 		return (
