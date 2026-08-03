@@ -3,6 +3,7 @@
 import { Add01Icon, WorkflowSquare07Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useTransition } from 'react'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -62,7 +63,13 @@ function AddWorkflowButton({
 					try {
 						await createWorkflow(generateSlug())
 					} catch (error) {
-						console.error(error)
+						if (
+							String(
+								(error as { digest?: string } | null)?.digest ?? ''
+							).startsWith('NEXT_REDIRECT')
+						)
+							throw error
+						toast.error('Could not create workflow')
 					}
 				})
 			}
