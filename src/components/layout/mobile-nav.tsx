@@ -14,7 +14,7 @@ import { Separator } from '@/components/ui/separator'
 import {
 	WorkflowList,
 	WorkflowNavHeader,
-} from '@/features/dashboard/components/workflow-nav'
+} from '@/features/workflows/components/workflow-nav'
 import { cn } from '@/lib/utils'
 
 export function MobileNav({ className }: { className?: string }) {
