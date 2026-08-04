@@ -16,7 +16,7 @@ export default async function DashboardLayout({
 
 	return (
 		<SidebarProvider>
-			<AppSidebar />
+			<AppSidebar workflows={workflows} />
 			<SidebarInset className='border'>
 				<MobileNav
 					className='absolute top-4 left-4 z-10'
