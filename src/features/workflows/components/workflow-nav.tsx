@@ -2,6 +2,8 @@
 
 import { WorkflowSquare07Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 import {
 	Popover,
@@ -24,6 +26,8 @@ import { AddWorkflowButton } from '@/features/workflows/components/add-workflow-
 import type { Workflow } from '@/lib/db/schema'
 
 function WorkflowList({ workflows }: { workflows: Workflow[] }) {
+	const pathname = usePathname()
+
 	return (
 		<SidebarMenu>
 			{workflows.length === 0 ? (
@@ -31,9 +35,14 @@ function WorkflowList({ workflows }: { workflows: Workflow[] }) {
 			) : (
 				workflows.map((workflow) => (
 					<SidebarMenuItem key={workflow.id}>
-						<SidebarMenuButton>
-							<span>{workflow.name}</span>
-						</SidebarMenuButton>
+						<SidebarMenuButton
+							render={
+								<Link href={`/workflows/${workflow.id}`}>
+									<span>{workflow.name}</span>
+								</Link>
+							}
+							isActive={pathname === `/workflows/${workflow.id}`}
+						/>
 					</SidebarMenuItem>
 				))
 			)}
