@@ -17,7 +17,11 @@ function emit() {
 }
 
 export function useCreateWorkflowInFlight() {
-	return useSyncExternalStore(subscribe, () => inFlight)
+	return useSyncExternalStore(
+		subscribe,
+		() => inFlight,
+		() => false
+	)
 }
 
 export function tryAcquireCreateWorkflowLock() {
