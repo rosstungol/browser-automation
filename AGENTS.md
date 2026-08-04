@@ -12,3 +12,9 @@ needed) from `src/lib/db/schema.ts` and import it. When a consumer needs only so
 columns, narrow with `Pick<Row, ...>` / `Omit<Row, ...>` rather than redeclaring a
 literal type. Don't add an insert type where `db.insert(...).values()` already
 enforces the shape.
+
+## Package manager
+
+Use `bun` whenever possible instead of `node` for running scripts,
+installing dependencies, and executing TypeScript. Reach for `node` only
+when a tool or script explicitly requires it.
