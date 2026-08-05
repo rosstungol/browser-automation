@@ -37,3 +37,6 @@ next-env.d.ts
 
 # database
 .neon
+
+# trigger
+.trigger

@@ -1,0 +1,10 @@
+{
+	"$schema": "https://opencode.ai/config.json",
+	"mcp": {
+		"trigger": {
+			"command": ["npx", "trigger.dev@4.5.9", "mcp", "--dev-only"],
+			"enabled": true,
+			"type": "local"
+		}
+	}
+}

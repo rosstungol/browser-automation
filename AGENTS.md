@@ -13,8 +13,8 @@ columns, narrow with `Pick<Row, ...>` / `Omit<Row, ...>` rather than redeclaring
 literal type. Don't add an insert type where `db.insert(...).values()` already
 enforces the shape.
 
-## Package manager
+<!-- TRIGGER.DEV SKILLS START -->
+## Trigger.dev agent skills
 
-Use `bun` whenever possible instead of `node` for running scripts,
-installing dependencies, and executing TypeScript. Reach for `node` only
-when a tool or script explicitly requires it.
+This project has Trigger.dev agent skills installed in `.agents/skills/`. Before writing or changing Trigger.dev code (background tasks, scheduled tasks, realtime, or chat.agent AI agents), load the most relevant skill: `trigger-authoring-chat-agent`, `trigger-authoring-tasks`, `trigger-chat-agent-advanced`, `trigger-cost-savings`, `trigger-getting-started`, `trigger-realtime-and-frontend`.
+<!-- TRIGGER.DEV SKILLS END -->
