@@ -1,4 +1,4 @@
-import { logger, task, wait } from '@trigger.dev/sdk'
+import { logger, metadata, task, wait } from '@trigger.dev/sdk'
 
 export const helloWorldTask = task({
 	id: 'hello-world',
@@ -7,7 +7,12 @@ export const helloWorldTask = task({
 	run: async (payload: unknown, { ctx }) => {
 		logger.log('Hello, world!', { payload, ctx })
 
-		await wait.for({ seconds: 5 })
+		await metadata.set('status', 'running')
+		await wait.for({ seconds: 2 })
+		await metadata.set('status', 'working')
+		await wait.for({ seconds: 3 })
+
+		await metadata.set('status', 'completed')
 
 		return {
 			message: 'Task finished!',
