@@ -25,14 +25,15 @@ const initialNodes: Node[] = [
 const initialEdges: Edge[] = [{ id: 'n1-n2', source: 'n1', target: 'n2' }]
 
 export function WorkflowCanvas() {
-	const { theme } = useTheme()
+	const { resolvedTheme } = useTheme()
 	const [mounted, setMounted] = useState(false)
 
 	useEffect(() => {
 		setMounted(true)
 	}, [])
 
-	const colorMode: ColorMode = mounted && theme === 'dark' ? 'dark' : 'light'
+	const colorMode: ColorMode =
+		mounted && resolvedTheme === 'dark' ? 'dark' : 'light'
 
 	const [nodes, _setNodes, onNodesChange] = useNodesState(initialNodes)
 	const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
