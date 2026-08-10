@@ -7,7 +7,7 @@ import {
 	type Connection,
 	ConnectionLineType,
 	type Edge,
-	type Node,
+	type NodeTypes,
 	ReactFlow,
 	useEdgesState,
 	useNodesState,
@@ -16,10 +16,18 @@ import { useTheme } from 'next-themes'
 import { useCallback, useEffect, useState } from 'react'
 
 import { ResizablePanel } from '@/components/ui/resizable'
+import type { StepNodeType } from '../nodes/node-registry'
+import { StepNode } from './step-node'
 
-const initialNodes: Node[] = [
-	{ id: 'n1', position: { x: 0, y: 0 }, data: { label: 'Node 1' } },
-	{ id: 'n2', position: { x: 0, y: 100 }, data: { label: 'Node 2' } },
+const nodeTypes: NodeTypes = { step: StepNode }
+
+const initialNodes: StepNodeType[] = [
+	{
+		id: 'start',
+		type: 'step',
+		position: { x: 0, y: 0 },
+		data: { type: 'start', kind: 'trigger', title: 'Start', values: {} },
+	},
 ]
 
 const initialEdges: Edge[] = [{ id: 'n1-n2', source: 'n1', target: 'n2' }]
@@ -48,6 +56,7 @@ export function WorkflowCanvas() {
 			<div className='h-full w-full'>
 				<ReactFlow
 					nodes={nodes}
+					nodeTypes={nodeTypes}
 					edges={edges}
 					onNodesChange={onNodesChange}
 					onEdgesChange={onEdgesChange}
