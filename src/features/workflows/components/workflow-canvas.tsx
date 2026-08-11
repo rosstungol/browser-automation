@@ -1,23 +1,24 @@
 'use client'
 
+import { Cursors, useLiveblocksFlow } from '@liveblocks/react-flow'
 import {
-	addEdge,
 	Background,
 	type ColorMode,
-	type Connection,
 	ConnectionLineType,
 	type Edge,
 	type NodeTypes,
 	ReactFlow,
-	useEdgesState,
-	useNodesState,
 } from '@xyflow/react'
 import { useTheme } from 'next-themes'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { ResizablePanel } from '@/components/ui/resizable'
 import type { StepNodeType } from '../nodes/node-registry'
 import { StepNode } from './step-node'
+
+import '@xyflow/react/dist/style.css'
+import '@liveblocks/react-ui/styles.css'
+import '@liveblocks/react-flow/styles.css'
 
 const nodeTypes: NodeTypes = { step: StepNode }
 
@@ -43,13 +44,12 @@ export function WorkflowCanvas() {
 	const colorMode: ColorMode =
 		mounted && resolvedTheme === 'dark' ? 'dark' : 'light'
 
-	const [nodes, _setNodes, onNodesChange] = useNodesState(initialNodes)
-	const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
-
-	const onConnect = useCallback(
-		(connection: Connection) => setEdges((edges) => addEdge(connection, edges)),
-		[]
-	)
+	const { nodes, edges, onNodesChange, onEdgesChange, onConnect, onDelete } =
+		useLiveblocksFlow({
+			suspense: true,
+			nodes: { initial: initialNodes },
+			edges: { initial: initialEdges },
+		})
 
 	return (
 		<ResizablePanel minSize='18rem'>
@@ -61,6 +61,7 @@ export function WorkflowCanvas() {
 					onNodesChange={onNodesChange}
 					onEdgesChange={onEdgesChange}
 					onConnect={onConnect}
+					onDelete={onDelete}
 					fitView
 					colorMode={colorMode}
 					connectionLineType={ConnectionLineType.SmoothStep}
@@ -79,6 +80,7 @@ export function WorkflowCanvas() {
 					}
 				>
 					<Background />
+					<Cursors />
 				</ReactFlow>
 			</div>
 		</ResizablePanel>
