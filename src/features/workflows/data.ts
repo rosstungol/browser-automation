@@ -3,15 +3,15 @@ import { and, desc, eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { workflows } from '@/lib/db/schema'
 
-export function getWorkflow(id: string, orgId: string) {
-	return db
+export async function getWorkflow(id: string, orgId: string) {
+	return await db
 		.select()
 		.from(workflows)
 		.where(and(eq(workflows.id, id), eq(workflows.orgId, orgId)))
 }
 
-export function listWorkflows(orgId: string) {
-	return db
+export async function listWorkflows(orgId: string) {
+	return await db
 		.select()
 		.from(workflows)
 		.where(eq(workflows.orgId, orgId))
