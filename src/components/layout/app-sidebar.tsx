@@ -15,6 +15,9 @@ export function AppSidebar({ workflows }: { workflows: Workflow[] }) {
 		<Sidebar variant='inset' collapsible='icon' className='py-4 md:mx-1'>
 			<SidebarHeader className='group-data-[collapsible=icon]:justify-center! flex-row items-center justify-between gap-2'>
 				<OrganizationSwitcher
+					afterCreateOrganizationUrl='/'
+					afterSelectOrganizationUrl='/'
+					afterLeaveOrganizationUrl='/'
 					hidePersonal
 					appearance={{
 						elements: {
