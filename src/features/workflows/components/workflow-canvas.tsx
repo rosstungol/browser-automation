@@ -1,12 +1,14 @@
 'use client'
 
 import { Cursors, useLiveblocksFlow } from '@liveblocks/react-flow'
+import { AvatarStack } from '@liveblocks/react-ui'
 import {
 	Background,
 	type ColorMode,
 	ConnectionLineType,
 	type Edge,
 	type NodeTypes,
+	Panel,
 	ReactFlow,
 } from '@xyflow/react'
 import { useTheme } from 'next-themes'
@@ -81,6 +83,9 @@ export function WorkflowCanvas() {
 				>
 					<Background />
 					<Cursors />
+					<Panel position='top-right'>
+						<AvatarStack />
+					</Panel>
 				</ReactFlow>
 			</div>
 		</ResizablePanel>
