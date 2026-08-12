@@ -4,10 +4,12 @@ import { db } from '@/lib/db'
 import { workflows } from '@/lib/db/schema'
 
 export async function getWorkflow(id: string, orgId: string) {
-	return await db
+	const [workflow] = await db
 		.select()
 		.from(workflows)
 		.where(and(eq(workflows.id, id), eq(workflows.orgId, orgId)))
+
+	return workflow
 }
 
 export async function listWorkflows(orgId: string) {

@@ -7,6 +7,8 @@ import {
 } from '@liveblocks/react/suspense'
 import type { ReactNode } from 'react'
 
+import { Spinner } from '@/components/ui/spinner'
+
 export function Room({
 	roomId,
 	children,
@@ -15,14 +17,15 @@ export function Room({
 	children: ReactNode
 }) {
 	return (
-		<LiveblocksProvider
-			throttle={16}
-			// TODO: Replace Public Key on Liveblocks auth implementation
-			// biome-ignore lint/style/noNonNullAssertion: to be replaced on liveblocks auth implementation
-			publicApiKey={process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY!}
-		>
+		<LiveblocksProvider throttle={16} authEndpoint='/api/liveblocks/auth'>
 			<RoomProvider id={roomId}>
-				<ClientSideSuspense fallback={<div>Loading…</div>}>
+				<ClientSideSuspense
+					fallback={
+						<div className='flex h-full items-center justify-center'>
+							<Spinner />
+						</div>
+					}
+				>
 					{children}
 				</ClientSideSuspense>
 			</RoomProvider>

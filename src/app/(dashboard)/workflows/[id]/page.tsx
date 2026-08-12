@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { Room } from '@/features/workflows/components/room'
 import { WorkflowShell } from '@/features/workflows/components/workflow-shell'
 import { getWorkflow } from '@/features/workflows/data'
+import { liveblocks } from '@/lib/liveblocks'
 import { isUuid } from '@/lib/utils'
 
 export default async function Page({
@@ -15,9 +16,21 @@ export default async function Page({
 	if (!isUuid(id)) notFound()
 
 	const { orgId } = await auth()
-	const workflow = orgId ? await getWorkflow(id, orgId) : []
+	if (!orgId) notFound()
 
-	if (workflow.length === 0) notFound()
+	const workflow = await getWorkflow(id, orgId)
+	if (!workflow) notFound()
+
+	await liveblocks.getOrCreateRoom(id, {
+		organizationId: orgId,
+		defaultAccesses: [],
+		groupsAccesses: {
+			[orgId]: ['room:write'],
+		},
+		metadata: {
+			title: workflow.name,
+		},
+	})
 
 	return (
 		<Room roomId={id}>
