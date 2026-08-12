@@ -19,7 +19,8 @@ export async function POST(request: Request) {
 		const body = (await request.json()) as { userIds?: unknown }
 		if (
 			!Array.isArray(body.userIds) ||
-			body.userIds.some((id) => typeof id !== 'string')
+			body.userIds.some((id) => typeof id !== 'string') ||
+			body.userIds.length > 100
 		) {
 			return new Response('Invalid request body', { status: 400 })
 		}
@@ -36,6 +37,7 @@ export async function POST(request: Request) {
 	const { data: users } = await client.users.getUserList({
 		userId: userIds,
 		organizationId: [orgId],
+		limit: userIds.length,
 	})
 
 	const userInfoById = new Map<string, UserDisplayInfo>()
