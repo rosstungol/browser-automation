@@ -6,7 +6,7 @@ import {
 	PlayIcon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { useReactFlow } from '@xyflow/react'
+import { useReactFlow, useStore } from '@xyflow/react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -288,8 +288,9 @@ export function RightSidebar({ workflowId }: { workflowId: string }) {
 
 	const [tab, setTab] = useState('toolbar')
 
-	// TODO: read the currently selected node from React Flow.
-	const selected: StepNodeType | undefined = undefined
+	const selected = useStore((s) => s.nodes.find((n) => n.selected)) as
+		| StepNodeType
+		| undefined
 
 	// TODO: auto-switch to the Editor tab when the selection changes.
 
