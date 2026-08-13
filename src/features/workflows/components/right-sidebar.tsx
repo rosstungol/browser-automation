@@ -6,7 +6,9 @@ import {
 	PlayIcon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
+import { useReactFlow } from '@xyflow/react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 import {
 	Accordion,
@@ -161,9 +163,39 @@ const definitions = Object.values(nodeRegistry)
 
 // The Toolbar tab: a button per node type that adds it to the canvas.
 function Palette() {
+	const { addNodes, getNodes, screenToFlowPosition } =
+		useReactFlow<StepNodeType>()
+
 	const add = (type: NodeType) => {
-		// TODO: add the clicked node to the canvas (one trigger max).
-		void type
+		const def = nodeRegistry[type]
+		const nodes = getNodes()
+
+		// A workflow has exactly one trigger; refuse to add another.
+		if (
+			def.kind === 'trigger' &&
+			nodes.some((node) => node.data.kind === 'trigger')
+		) {
+			toast.error('Only one trigger node is allowed.')
+			return
+		}
+
+		// Number nodes of the same type so they stay easy to tell apart.
+		const count = nodes.filter((node) => node.data.type === type).length
+
+		addNodes({
+			id: crypto.randomUUID(),
+			type: 'step',
+			position: screenToFlowPosition({
+				x: window.innerWidth / 2,
+				y: window.innerHeight / 2,
+			}),
+			data: {
+				type,
+				kind: def.kind,
+				title: `${def.label} ${count + 1}`,
+				values: {},
+			},
+		})
 	}
 
 	return (
@@ -251,7 +283,9 @@ function RunButton() {
 // The sidebar itself — header on top, then the Toolbar / Editor tabs.
 // ---------------------------------------------------------------------------
 
-export function RightSidebar() {
+export function RightSidebar({ workflowId }: { workflowId: string }) {
+	void workflowId
+
 	const [tab, setTab] = useState('toolbar')
 
 	// TODO: read the currently selected node from React Flow.
