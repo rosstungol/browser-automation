@@ -3,6 +3,12 @@ import { and, desc, eq } from 'drizzle-orm'
 import { db } from '@/lib/db'
 import { workflows } from '@/lib/db/schema'
 
+export async function deleteWorkflow(id: string, orgId: string) {
+	await db
+		.delete(workflows)
+		.where(and(eq(workflows.id, id), eq(workflows.orgId, orgId)))
+}
+
 export async function getWorkflow(id: string, orgId: string) {
 	const [workflow] = await db
 		.select()
@@ -13,13 +19,20 @@ export async function getWorkflow(id: string, orgId: string) {
 }
 
 export async function listWorkflows(orgId: string) {
-	return await db
+	const workflowsList = await db
 		.select()
 		.from(workflows)
 		.where(eq(workflows.orgId, orgId))
 		.orderBy(desc(workflows.createdAt))
+
+	return workflowsList
 }
 
 export async function createWorkflow(orgId: string, name: string) {
-	return await db.insert(workflows).values({ orgId, name }).returning()
+	const newWorkflow = await db
+		.insert(workflows)
+		.values({ orgId, name })
+		.returning()
+
+	return newWorkflow
 }

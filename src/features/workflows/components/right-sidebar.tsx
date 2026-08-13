@@ -7,9 +7,8 @@ import {
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useReactFlow, useStore } from '@xyflow/react'
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
-
 import {
 	Accordion,
 	AccordionContent,
@@ -28,6 +27,7 @@ import { Label } from '@/components/ui/label'
 import { ResizablePanel } from '@/components/ui/resizable'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
+import { deleteWorkflowAction } from '@/features/workflows/actions'
 import {
 	type NodeDefinition,
 	type NodeField,
@@ -251,7 +251,9 @@ function Palette() {
 // ---------------------------------------------------------------------------
 
 // The "..." menu for workflow-level actions.
-function ActionsMenu() {
+function ActionsMenu({ workflowId }: { workflowId: string }) {
+	const [isPending, startTransition] = useTransition()
+
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger
@@ -264,13 +266,30 @@ function ActionsMenu() {
 			<DropdownMenuContent align='start' className='min-w-48'>
 				<DropdownMenuItem
 					variant='destructive'
+					disabled={isPending}
 					className="text-xs [&_svg:not([class*='size-'])]:size-3.5"
-					onSelect={() => {
-						// TODO: delete the workflow, then navigate away.
+					onClick={() => {
+						startTransition(async () => {
+							try {
+								await deleteWorkflowAction(workflowId)
+							} catch (error) {
+								// redirect('/') surfaces as a NEXT_REDIRECT error that must
+								// be rethrown so the client actually navigates away.
+								if (
+									error instanceof Error &&
+									(error as Error & { digest?: string }).digest?.startsWith(
+										'NEXT_REDIRECT'
+									)
+								) {
+									throw error
+								}
+								toast.error('Failed to delete workflow.')
+							}
+						})
 					}}
 				>
 					<HugeiconsIcon icon={Delete02Icon} />
-					Delete workflow
+					{isPending ? 'Deleting…' : 'Delete workflow'}
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
@@ -298,8 +317,6 @@ function RunButton() {
 // ---------------------------------------------------------------------------
 
 export function RightSidebar({ workflowId }: { workflowId: string }) {
-	void workflowId
-
 	const [tab, setTab] = useState('toolbar')
 
 	const selected = useStore((s) => s.nodes.find((n) => n.selected)) as
@@ -323,7 +340,7 @@ export function RightSidebar({ workflowId }: { workflowId: string }) {
 		>
 			<Tabs value={tab} onValueChange={setTab} className='size-full gap-0'>
 				<div className='flex items-center justify-between border-border border-b p-2'>
-					<ActionsMenu />
+					<ActionsMenu workflowId={workflowId} />
 					<RunButton />
 				</div>
 				<TabsList className='m-2 w-fit bg-background'>
