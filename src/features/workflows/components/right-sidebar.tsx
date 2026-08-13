@@ -7,6 +7,7 @@ import {
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useReactFlow, useStore } from '@xyflow/react'
+import { unstable_rethrow } from 'next/navigation'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import {
@@ -24,7 +25,6 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ResizablePanel } from '@/components/ui/resizable'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import { deleteWorkflowAction } from '@/features/workflows/actions'
@@ -273,16 +273,9 @@ function ActionsMenu({ workflowId }: { workflowId: string }) {
 							try {
 								await deleteWorkflowAction(workflowId)
 							} catch (error) {
-								// redirect('/') surfaces as a NEXT_REDIRECT error that must
-								// be rethrown so the client actually navigates away.
-								if (
-									error instanceof Error &&
-									(error as Error & { digest?: string }).digest?.startsWith(
-										'NEXT_REDIRECT'
-									)
-								) {
-									throw error
-								}
+								// Rethrow framework errors (e.g. the redirect after
+								// deletion) so the client actually navigates away.
+								unstable_rethrow(error)
 								toast.error('Failed to delete workflow.')
 							}
 						})
@@ -302,12 +295,11 @@ function RunButton() {
 		<Button
 			size='sm'
 			variant='secondary'
-			onClick={() => {
-				// TODO: validate the graph and run the workflow (toggle to Stop while running).
-			}}
+			disabled
+			title='Running workflows is not available yet'
 		>
 			<HugeiconsIcon icon={PlayIcon} />
-			Run
+			Unavailable
 		</Button>
 	)
 }
@@ -331,13 +323,7 @@ export function RightSidebar({ workflowId }: { workflowId: string }) {
 	}
 
 	return (
-		<ResizablePanel
-			className='bg-background'
-			defaultSize='16rem'
-			minSize='14rem'
-			maxSize='36rem'
-			groupResizeBehavior='preserve-pixel-size'
-		>
+		<div className='bg-background'>
 			<Tabs value={tab} onValueChange={setTab} className='size-full gap-0'>
 				<div className='flex items-center justify-between border-border border-b p-2'>
 					<ActionsMenu workflowId={workflowId} />
@@ -364,6 +350,6 @@ export function RightSidebar({ workflowId }: { workflowId: string }) {
 					<Inspector node={selected} />
 				</TabsContent>
 			</Tabs>
-		</ResizablePanel>
+		</div>
 	)
 }

@@ -4,9 +4,12 @@ import { db } from '@/lib/db'
 import { workflows } from '@/lib/db/schema'
 
 export async function deleteWorkflow(id: string, orgId: string) {
-	await db
+	const [deleted] = await db
 		.delete(workflows)
 		.where(and(eq(workflows.id, id), eq(workflows.orgId, orgId)))
+		.returning()
+
+	return deleted
 }
 
 export async function getWorkflow(id: string, orgId: string) {

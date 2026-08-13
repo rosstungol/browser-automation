@@ -23,13 +23,15 @@ export async function deleteWorkflowAction(workflowId: string) {
 	const { orgId } = await auth()
 	if (!orgId) throw new Error('No active organization')
 
-	await deleteWorkflow(workflowId, orgId)
+	const deleted = await deleteWorkflow(workflowId, orgId)
 
-	try {
-		await liveblocks.deleteRoom(workflowId)
-	} catch {
-		// Room may already be gone or Liveblocks may be unreachable; the
-		// workflow itself is already deleted, so don't fail the action.
+	if (deleted) {
+		try {
+			await liveblocks.deleteRoom(workflowId)
+		} catch {
+			// Room may already be gone or Liveblocks may be unreachable; the
+			// workflow itself is already deleted, so don't fail the action.
+		}
 	}
 
 	revalidatePath('/', 'layout')
