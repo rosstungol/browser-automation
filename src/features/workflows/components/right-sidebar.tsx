@@ -10,6 +10,7 @@ import { useReactFlow, useStore } from '@xyflow/react'
 import { unstable_rethrow } from 'next/navigation'
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
+
 import {
 	Accordion,
 	AccordionContent,
@@ -27,7 +28,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
-import { deleteWorkflowAction } from '@/features/workflows/actions'
+import {
+	deleteWorkflowAction,
+	runWorkflowAction,
+} from '@/features/workflows/actions'
 import {
 	type NodeDefinition,
 	type NodeField,
@@ -37,6 +41,7 @@ import {
 	type StepNodeType,
 } from '@/features/workflows/nodes/node-registry'
 import { cn } from '@/lib/utils'
+import { validateGraph } from '../lib/validate-graph'
 
 // This file builds up to the RightSidebar component exported at the bottom: a
 // header with workflow actions (delete, run), then two tabs — a Toolbar for
@@ -290,16 +295,32 @@ function ActionsMenu({ workflowId }: { workflowId: string }) {
 }
 
 // Kicks off a run of the current workflow.
-function RunButton() {
+function RunButton({ workflowId }: { workflowId: string }) {
+	const { getNodes, getEdges } = useReactFlow<StepNodeType>()
+	const [isPending, startTransition] = useTransition()
+
 	return (
 		<Button
 			size='sm'
 			variant='secondary'
-			disabled
-			title='Running workflows is not available yet'
+			disabled={isPending}
+			title='Run workflow'
+			onClick={() => {
+				const graph = { nodes: getNodes(), edges: getEdges() }
+				const problems = validateGraph(graph)
+
+				if (problems.length > 0) {
+					toast.error(problems[0])
+					return
+				}
+
+				startTransition(async () => {
+					await runWorkflowAction({ id: workflowId, graph })
+				})
+			}}
 		>
 			<HugeiconsIcon icon={PlayIcon} />
-			Unavailable
+			Run
 		</Button>
 	)
 }
@@ -327,7 +348,7 @@ export function RightSidebar({ workflowId }: { workflowId: string }) {
 			<Tabs value={tab} onValueChange={setTab} className='size-full gap-0'>
 				<div className='flex items-center justify-between border-border border-b p-2'>
 					<ActionsMenu workflowId={workflowId} />
-					<RunButton />
+					<RunButton workflowId={workflowId} />
 				</div>
 				<TabsList className='m-2 w-fit bg-background'>
 					<TabsTrigger
