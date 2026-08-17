@@ -315,7 +315,14 @@ function RunButton({ workflowId }: { workflowId: string }) {
 				}
 
 				startTransition(async () => {
-					await runWorkflowAction({ id: workflowId, graph })
+					try {
+						await runWorkflowAction({ id: workflowId, graph })
+					} catch (error) {
+						// Rethrow framework errors (e.g. a redirect) so the client
+						// actually navigates, otherwise surface a retryable failure.
+						unstable_rethrow(error)
+						toast.error('Failed to run workflow.')
+					}
 				})
 			}}
 		>

@@ -17,10 +17,15 @@ export async function saveWorkflowGraph({
 
 	if (problems.length > 0) throw new Error(problems.join(' '))
 
-	await db
+	const [updated] = await db
 		.update(workflows)
 		.set({ graph, updatedAt: new Date() })
 		.where(and(eq(workflows.id, id), eq(workflows.orgId, orgId)))
+		.returning()
+
+	if (!updated) {
+		throw new Error(`Workflow ${id} not found in this organization.`)
+	}
 }
 
 export async function deleteWorkflow(id: string, orgId: string) {
