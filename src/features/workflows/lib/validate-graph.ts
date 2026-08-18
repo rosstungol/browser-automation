@@ -15,6 +15,16 @@ export function validateGraph({ nodes, edges }: WorkflowGraph): string[] {
 
 	const nodeIds = new Set(nodes.map((n) => n.id))
 
+	const counts = new Map<string, number>()
+	for (const node of nodes) {
+		counts.set(node.id, (counts.get(node.id) ?? 0) + 1)
+	}
+	for (const [id, count] of counts) {
+		if (count > 1) {
+			problems.push(`Duplicate node ID "${id}" (found ${count}).`)
+		}
+	}
+
 	for (const edge of edges) {
 		if (!nodeIds.has(edge.source)) {
 			problems.push(`Edge from unknown node "${edge.source}".`)

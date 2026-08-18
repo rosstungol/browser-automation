@@ -53,6 +53,22 @@ describe('validateGraph', () => {
 		)
 	})
 
+	it('rejects duplicate node IDs', () => {
+		const graph = {
+			nodes: [
+				node('start', 'trigger'),
+				node('a', 'action'),
+				node('a', 'action'),
+			],
+			edges: [edge('start', 'a')],
+		}
+
+		const problems = validateGraph(graph)
+		expect(problems).toEqual(
+			expect.arrayContaining(['Duplicate node ID "a" (found 2).'])
+		)
+	})
+
 	it('rejects an action disconnected from the Start trigger in its own component', () => {
 		const graph = {
 			nodes: [
