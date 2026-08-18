@@ -33,7 +33,7 @@ const initialNodes: StepNodeType[] = [
 	},
 ]
 
-const initialEdges: Edge[] = [{ id: 'n1-n2', source: 'n1', target: 'n2' }]
+const initialEdges: Edge[] = []
 
 export function WorkflowCanvas() {
 	const { resolvedTheme } = useTheme()
